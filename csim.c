@@ -56,25 +56,25 @@ int main(int argc, char *argv[]) {
     // If help set, print help
     if (h) {
         printHelp();
-        exit(0);
+        return 0;
     }
 
     // Check all required arguments set
     if (s == -1) {
         printError("s is a required argument that must be set. -s <s>\n");
-        exit(1);
+        return 1;
     }
     if (E == -1) {
         printError("E is a required argument that must be set. -E <E>\n");
-        exit(1);
+        return 1;
     }
     if (b == -1) {
         printError("b is a required argument that must be set. -b <b>\n");
-        exit(1);
+        return 1;
     }
     if (trace == NULL) {
         printError("trace file is required argument that must be set. -t <trace>\n")
-        exit(1);
+        return 1;
     }
 
     // TODO: Initialze data structures
