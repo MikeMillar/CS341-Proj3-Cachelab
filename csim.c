@@ -11,7 +11,9 @@ struct Line {
     char* data;
 };
 
-Line* initializeCache(int s, int E, int b);
+typedef struct Line Line_t;
+
+Line_t* initializeCache(int s, int E, int b);
 void printHelp();
 void printError(char* msg);
 
@@ -87,7 +89,7 @@ int main(int argc, char *argv[]) {
     // End Argument parsing
 
     // Initialize data structures
-    Line* cacheSets = initializeCache(s, E);
+    Line_t* cacheSets = initializeCache(s, E);
     int hit_count = 0;
     int miss_count = 0;
     int eviction_count = 0;
@@ -100,9 +102,9 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-Line* initializeCache(int s, int E) {
+Line_t* initializeCache(int s, int E) {
     int set_count = (int) pow(2, s);
-    Line sets[set_count][E];
+    Line_t sets[set_count][E];
     for (int i = 0; i < set_count; i++) {
         for (int j = 0; j < E; j++) {
             sets[i][j] = malloc(sizeof(Line));
