@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
     Line_t cacheSets[set_count][E];
     for (int i = 0; i < set_count; i++) {
         for (int j = 0; j < E; j++) {
-            Line_t line = sets[i][j];
+            Line_t line = cacheSets[i][j];
             line.valid = 0;
         }
     }
