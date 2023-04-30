@@ -112,8 +112,9 @@ void initializeCache(Line_t* sets, int s, int E) {
     sets = malloc(sizeof(Line_t) * set_count * E);
     for (int i = 0; i < set_count; i++) {
         for (int j = 0; j < E; j++) {
-            sets[i][j] = malloc(sizeof(Line_t));
-            sets[i][j].valid = 0;
+            Line_t* line = malloc(sizeof(Line_t));
+            line->valid = 0;
+            sets[i * E + j] = line;
         }
     }
 }
@@ -121,7 +122,8 @@ void initializeCache(Line_t* sets, int s, int E) {
 void freeCache(Line_t* sets, int s, int E) {
     for (int i = 0; i < set_count; i++) {
         for (int j = 0; j < E; j++) {
-            free(sets[i][j]);
+            Line_t* line = sets[i * E + j];
+            free(line);
         }
     }
     free(sets);
