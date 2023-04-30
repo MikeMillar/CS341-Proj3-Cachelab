@@ -2,10 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <math.h>
 #include "cachelab.h"
-
-void printHelp();
-void printError(char* msg);
 
 struct Line {
     int valid;
@@ -13,8 +11,14 @@ struct Line {
     char* data;
 };
 
+Line* initializeCache(int s, int E, int b);
+void printHelp();
+void printError(char* msg);
+
+
+
 int main(int argc, char *argv[]) {
-    // TODO: Parse command line arguments
+    // Parse command line arguments
     // -h: help
     int h = 0;
     // -v: verbose
@@ -80,17 +84,32 @@ int main(int argc, char *argv[]) {
         printError("trace file is required argument that must be set. -t <trace>\n");
         return 1;
     }
+    // End Argument parsing
 
-    // TODO: Initialze data structures
+    // Initialize data structures
+    Line* cacheSets = initializeCache(s, E);
     int hit_count = 0;
     int miss_count = 0;
     int eviction_count = 0;
+    // End initialization
 
     // TODO: Read in trace line-by-line and simulate cache
 
     // Print Summary
     printSummary(hit_count, miss_count, eviction_count);
     return 0;
+}
+
+Line* initializeCache(int s, int E) {
+    int set_count = (int) pow(2, s);
+    Line sets[set_count][E];
+    for (int i = 0; i < set_count; i++) {
+        for (int j = 0; j < E; j++) {
+            sets[i][j] = malloc(sizeof(Line));
+            sets[i][j].valid = 0;
+        }
+    }
+    return sets;
 }
 
 void printHelp() {
