@@ -123,7 +123,7 @@ void freeCache(Line_t* sets, int s, int E) {
     int set_count = (int) pow(2, s);
     for (int i = 0; i < set_count; i++) {
         for (int j = 0; j < E; j++) {
-            Line_t* line = sets[i * E + j];
+            Line_t* line = &sets[i * E + j];
             free(line);
         }
     }
