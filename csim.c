@@ -13,8 +13,8 @@ struct Line {
 
 typedef struct Line Line_t;
 
-void initializeCache(Line_t* sets, int s, int E);
-void freeCache(Line_t* sets, int s, int E);
+void initializeCache(Line_t* sets, int set_count, int E);
+void freeCache(Line_t* sets, int set_count, int E);
 void printHelp();
 void printError(char* msg);
 
@@ -90,8 +90,9 @@ int main(int argc, char *argv[]) {
     // End Argument parsing
 
     // Initialize data structures
-    Line_t* cacheSets;
-    initializeCache(cacheSets, s, E);
+    int set_count = pow(2, s);
+    Line_t* cacheSets = malloc(sizeof(Line_t) * set_count * E);
+    initializeCache(cacheSets, set_count, E);
     int hit_count = 0;
     int miss_count = 0;
     int eviction_count = 0;
@@ -107,9 +108,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void initializeCache(Line_t* sets, int s, int E) {
-    int set_count = (int) pow(2, s);
-    sets = malloc(sizeof(Line_t) * set_count * E);
+void initializeCache(Line_t* sets, int set_count, int E) {
     for (int i = 0; i < set_count; i++) {
         for (int j = 0; j < E; j++) {
             Line_t* line = malloc(sizeof(Line_t));
@@ -119,8 +118,7 @@ void initializeCache(Line_t* sets, int s, int E) {
     }
 }
 
-void freeCache(Line_t* sets, int s, int E) {
-    int set_count = (int) pow(2, s);
+void freeCache(Line_t* sets, int set_count, int E) {
     for (int i = 0; i < set_count; i++) {
         for (int j = 0; j < E; j++) {
             Line_t* line = &sets[i * E + j];
