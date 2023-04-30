@@ -100,7 +100,7 @@ void printHelp() {
     printf("\t-s <s>\t\tNumber of set index bits (S = 2^s is number of sets)\n");
     printf("\t-E <E>\t\tAssociativity (number of lines per set)\n");
     printf("\t-b <b>\t\tNumber of block bits (B = 2^b is block size)\n");
-    printf("\t-t <tracefile>\t\tName of valgrind trace to replay\n");
+    printf("\t-t <tracefile>\tName of valgrind trace to replay\n");
 }
 
 void printError(char* msg) {
