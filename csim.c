@@ -13,8 +13,8 @@ struct Line {
 
 typedef struct Line Line_t;
 
-void initializeCache(Line_t* sets, int set_count, int E);
-void freeCache(Line_t* sets, int set_count, int E);
+void initializeCache(Line_t sets[][], int set_count, int E);
+// void freeCache(Line_t* sets, int set_count, int E);
 void printHelp();
 void printError(char* msg);
 
@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void initializeCache(Line_t* sets, int set_count, int E) {
+void initializeCache(Line_t sets[][], int set_count, int E) {
     for (int i = 0; i < set_count; i++) {
         for (int j = 0; j < E; j++) {
             Line_t line = sets[i][j];
