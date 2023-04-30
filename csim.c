@@ -82,7 +82,9 @@ int main(int argc, char *argv[]) {
     }
 
     // TODO: Initialze data structures
-    int hit_count, miss_count, eviction_count = 0;
+    int hit_count = 0;
+    int miss_count = 0;
+    int eviction_count = 0;
 
     // TODO: Read in trace line-by-line and simulate cache
 
