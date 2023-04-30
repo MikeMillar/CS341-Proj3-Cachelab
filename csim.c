@@ -12,8 +12,7 @@ struct Line {
     char* data;
 };
 
-int main()
-{
+int main(int argc, char *argv[]) {
     // TODO: Parse command line arguments
     // -h: help
     int h = 0;
@@ -89,9 +88,9 @@ int main()
 }
 
 void printHelp() {
-    printf("This is a cache simulator program for project 3 of UNM CS341. This program utilizes several arguments:\n")
-    printf("\t-h\t\tOptional help flag that prints usage info.\n")
-    printf("\t-v\t\tOptional verbose flag that displays trace info.\n")
+    printf("This is a cache simulator program for project 3 of UNM CS341. This program utilizes several arguments:\n");
+    printf("\t-h\t\tOptional help flag that prints usage info.\n");
+    printf("\t-v\t\tOptional verbose flag that displays trace info.\n");
     printf("\t-s <s>\t\tNumber of set index bits (S = 2^s is number of sets)\n");
     printf("\t-E <E>\t\tAssociativity (number of lines per set)\n");
     printf("\t-b <b>\t\tNumber of block bits (B = 2^b is block size)\n");
