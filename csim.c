@@ -13,7 +13,8 @@ struct Line {
 
 typedef struct Line Line_t;
 
-Line_t* initializeCache(int s, int E);
+void initializeCache(Line_t* sets, int s, int E);
+void freeCache(Line_t* sets, int s, int E);
 void printHelp();
 void printError(char* msg);
 
@@ -89,7 +90,8 @@ int main(int argc, char *argv[]) {
     // End Argument parsing
 
     // Initialize data structures
-    Line_t* cacheSets = initializeCache(s, E);
+    Line_t* cacheSets;
+    initializeCache(cacheSets, s, E);
     int hit_count = 0;
     int miss_count = 0;
     int eviction_count = 0;
@@ -97,21 +99,32 @@ int main(int argc, char *argv[]) {
 
     // TODO: Read in trace line-by-line and simulate cache
 
+    // TODO: Free memory
+    freeCache(cacheSets, s, E);
+
     // Print Summary
     printSummary(hit_count, miss_count, eviction_count);
     return 0;
 }
 
-Line_t* initializeCache(int s, int E) {
+void initializeCache(Line_t* sets, int s, int E) {
     int set_count = (int) pow(2, s);
-    Line_t sets[set_count][E];
+    sets = malloc(sizeof(Line_t) * set_count * E);
     for (int i = 0; i < set_count; i++) {
         for (int j = 0; j < E; j++) {
-            sets[i][j] = malloc(sizeof(Line));
+            sets[i][j] = malloc(sizeof(Line_t));
             sets[i][j].valid = 0;
         }
     }
-    return &sets;
+}
+
+void freeCache(Line_t* sets, int s, int E) {
+    for (int i = 0; i < set_count; i++) {
+        for (int j = 0; j < E; j++) {
+            free(sets[i][j]);
+        }
+    }
+    free(sets);
 }
 
 void printHelp() {
