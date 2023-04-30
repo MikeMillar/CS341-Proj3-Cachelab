@@ -13,7 +13,7 @@ struct Line {
 
 typedef struct Line Line_t;
 
-Line_t* initializeCache(int s, int E, int b);
+Line_t* initializeCache(int s, int E);
 void printHelp();
 void printError(char* msg);
 
@@ -111,7 +111,7 @@ Line_t* initializeCache(int s, int E) {
             sets[i][j].valid = 0;
         }
     }
-    return sets;
+    return &sets;
 }
 
 void printHelp() {
