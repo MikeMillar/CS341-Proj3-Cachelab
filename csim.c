@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     if (trace == NULL) {
-        printError("trace file is required argument that must be set. -t <trace>\n")
+        printError("trace file is required argument that must be set. -t <trace>\n");
         return 1;
     }
 
