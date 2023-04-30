@@ -59,6 +59,9 @@ int main(int argc, char *argv[]) {
         printHelp();
         return 0;
     }
+    if (v) {
+        printf("Verbose printouts enabled.\n");
+    }
 
     // Check all required arguments set
     if (s == -1) {
