@@ -13,8 +13,6 @@ struct Line {
 
 typedef struct Line Line_t;
 
-void initializeCache(Line_t sets[][], int set_count, int E);
-// void freeCache(Line_t* sets, int set_count, int E);
 void printHelp();
 void printError(char* msg);
 
@@ -92,7 +90,13 @@ int main(int argc, char *argv[]) {
     // Initialize data structures
     int set_count = pow(2, s);
     Line_t cacheSets[set_count][E];
-    initializeCache(cacheSets, set_count, E);
+    for (int i = 0; i < set_count; i++) {
+        for (int j = 0; j < E; j++) {
+            Line_t line = sets[i][j];
+            line.valid = 0;
+        }
+    }
+
     int hit_count = 0;
     int miss_count = 0;
     int eviction_count = 0;
@@ -100,32 +104,10 @@ int main(int argc, char *argv[]) {
 
     // TODO: Read in trace line-by-line and simulate cache
 
-    // TODO: Free memory
-    // freeCache(cacheSets, s, E);
-
     // Print Summary
     printSummary(hit_count, miss_count, eviction_count);
     return 0;
 }
-
-void initializeCache(Line_t sets[][], int set_count, int E) {
-    for (int i = 0; i < set_count; i++) {
-        for (int j = 0; j < E; j++) {
-            Line_t line = sets[i][j];
-            line.valid = 0;
-        }
-    }
-}
-
-// void freeCache(Line_t* sets, int set_count, int E) {
-//     for (int i = 0; i < set_count; i++) {
-//         for (int j = 0; j < E; j++) {
-//             Line_t* line = &sets[i * E + j];
-//             free(line);
-//         }
-//     }
-//     free(sets);
-// }
 
 void printHelp() {
     printf("This is a cache simulator program for project 3 of UNM CS341. This program utilizes several arguments:\n");
