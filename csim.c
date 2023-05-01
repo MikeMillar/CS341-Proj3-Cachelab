@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
             // parse address
             char addStr[end-start+1];
             substring(addStr, buff, start, end);
-            unsigned long address = stroul(addStr, NULL, 16);
+            unsigned long address = strtoul(addStr, NULL, 16);
             // extract set
             int set = extract(address, s, b);
             // extract tag
