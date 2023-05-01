@@ -172,20 +172,41 @@ int main(int argc, char *argv[]) {
 }
 
 void loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
+     int leastRecentIndex = 0;
+    long oldestTime = -1;
     // iterate through set lines
     for (int line = 0; line < E; line++) {
         // get line
         Line_t setLine = cacheSets[set * E + line];
         // if line valid, and tag matches
-        if (setLine.valid && tag == setLine.tag) {
-            // update hit count, last_used, and return
-            *hit_count_p = *hit_count_p + 1;
-            setLine.last_used = time(NULL);
-            return;
+        if (setLine.valid) {
+            if (tag == setLine.tag) {}
+                // update hit count, last_used, and return
+                *hit_count_p = *hit_count_p + 1;
+                setLine.last_used = time(NULL);
+                return;
+            }
+            // valid, but not matching tag
+            if (oldestTime == -1 || setLine.last_used < oldestTime) {
+                // new least recently used found, update variables
+                oldestTime = setLine.last_used;
+                leastRecentIndex = line;
+            }
         }
     }
     // no valid and matching tab, miss
     *miss_count_p = *miss_count_p + 1;
+    if (oldestTime == -1) {
+        // open lines available
+        cacheSets[set * E + leastRecentIndex].valid = 1;
+        cacheSets[set * E + leastRecentIndex].tag = tag;
+        cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
+    } else {
+        // no open line, evict oldest
+        evict(cacheSets, tag, set, E, leastRecentIndex);
+        // update evict count
+        *eviction_count_p = *eviction_count_p + 1;
+    }    
 }
 
 void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
@@ -211,12 +232,12 @@ void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
         }
     }
     // no match found, need to save/evict
+    *miss_count_p = *miss_count_p + 1;
     if (oldestTime == -1) {
         // open lines available
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
         cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
-        *miss_count_p = *miss_count_p + 1;
     } else {
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
