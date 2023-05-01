@@ -121,6 +121,7 @@ int main(int argc, char *argv[]) {
             char addStr[MAX_LENGTH];
             char offset[MAX_LENGTH];
             sscanf(buff, " %c %s,%s", &instruction, addStr, offset);
+            addStr[strcspn(addStr, ",")] = 0;
             printf("addStr=%s", addStr);
 
             // char line[MAX_LENGTH];
