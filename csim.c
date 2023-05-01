@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             if (v) {
-                printf("%s %s, s=%d, t=%d\n", line, result, set, tag);
+                printf("%s %s, s=%ld, t=%ld\n", line, result, set, tag);
                 // printf("%s %s\n", line, result);
             }
         }
