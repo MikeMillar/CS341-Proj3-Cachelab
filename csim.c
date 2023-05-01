@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
                 continue;
             }
             char line[strlen(buff)];
-            substring(line,1,strlen(buff));
+            substring(line,buff,1,(int)strlen(buff));
             // extract instruction data
             // find end of address
             char* c = strchr(buff, ',');
@@ -140,6 +140,7 @@ int main(int argc, char *argv[]) {
 
             // Determine which operation to perform
             char* result;
+            char* tmp;
             switch (buff[1])
             {
             case 'L':
@@ -151,8 +152,7 @@ int main(int argc, char *argv[]) {
                 result = saveData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
                 break;
             case 'M':
-                // TODO: Modify data
-                char* tmp;
+                // TODO: Modify data  
                 result = loadData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
                 tmp = saveData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
                 strcat(result, " ");
@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-char* loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
+char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
     int leastRecentIndex = 0;
     long oldestTime = -1;
     // iterate through set lines
@@ -216,7 +216,7 @@ char* loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, in
     }    
 }
 
-char* saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
+char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
     int leastRecentIndex = 0;
     long oldestTime = -1;
     // iterate through set lines
@@ -255,7 +255,7 @@ char* saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, in
     }    
 }
 
-void evict(Line_t cacheSets[], int tag, int set, int E, int line) {
+void evict(Line_t cacheSets[], long tag, long set, int E, int line) {
     cacheSets[set * E + line].valid = 1;
     cacheSets[set * E + line].tag = tag;
     cacheSets[set * E + line].last_used = time(NULL);
