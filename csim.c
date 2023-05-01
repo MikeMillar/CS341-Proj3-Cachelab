@@ -193,12 +193,13 @@ int main(int argc, char *argv[]) {
 }
 
 char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
-    // printf("==IN LOAD==\n");
+    printf("==IN LOAD==\n");
     // printf("DATA: tag=%ld, set=%ld\n", tag, set);
     int leastRecentIndex = 0;
     long oldestTime = -1;
     // iterate through set lines
     for (int line = 0; line < E; line++) {
+        printf("==IN LINE %d==\n", line);
         // get line
         Line_t setLine = cacheSets[set * E + line];
         // printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
@@ -239,12 +240,13 @@ char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
 }
 
 char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
-    // printf("==IN SAVE==\n");
+    printf("==IN SAVE==\n");
     // printf("DATA: tag=%ld, set=%ld\n", tag, set);
     int leastRecentIndex = 0;
     long oldestTime = -1;
     // iterate through set lines
     for (int line = 0; line < E; line++) {
+        printf("==IN LINE %d==\n", line);
         // get line
         Line_t setLine = cacheSets[set * E + line];
         // printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
