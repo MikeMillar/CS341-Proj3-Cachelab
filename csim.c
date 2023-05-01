@@ -193,19 +193,19 @@ int main(int argc, char *argv[]) {
 }
 
 char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
-    printf("==IN LOAD==\n");
-    printf("DATA: tag=%ld, set=%ld\n", tag, set);
+    // printf("==IN LOAD==\n");
+    // printf("DATA: tag=%ld, set=%ld\n", tag, set);
     int leastRecentIndex = 0;
     long oldestTime = -1;
     // iterate through set lines
     for (int line = 0; line < E; line++) {
         // get line
         Line_t setLine = cacheSets[set * E + line];
-        printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
+        // printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
         // if line valid, and tag matches
         if (setLine.valid) {
             if (tag == setLine.tag) {
-                printf("HIT\n");
+                // printf("HIT\n");
                 // update hit count, last_used, and return
                 *hit_count_p = *hit_count_p + 1;
                 setLine.last_used = time(NULL);
@@ -222,14 +222,14 @@ char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
     // no valid and matching tab, miss
     *miss_count_p = *miss_count_p + 1;
     if (oldestTime == -1) {
-        printf("MISS\n");
+        // printf("MISS\n");
         // open lines available
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
         cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
         return "miss";
     } else {
-        printf("MISS EVICT\n");
+        // printf("MISS EVICT\n");
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
         // update evict count
@@ -239,19 +239,19 @@ char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
 }
 
 char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
-    printf("==IN SAVE==\n");
-    printf("DATA: tag=%ld, set=%ld\n", tag, set);
+    // printf("==IN SAVE==\n");
+    // printf("DATA: tag=%ld, set=%ld\n", tag, set);
     int leastRecentIndex = 0;
     long oldestTime = -1;
     // iterate through set lines
     for (int line = 0; line < E; line++) {
         // get line
         Line_t setLine = cacheSets[set * E + line];
-        printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
+        // printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
         // if line valid, and tag matches
         if (setLine.valid) {
             if (tag == setLine.tag) {
-                printf("HIT\n");
+                // printf("HIT\n");
                 // update hit count and return
                 *hit_count_p = *hit_count_p + 1;
                 return "hit";
@@ -267,14 +267,14 @@ char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
     // no match found, need to save/evict
     *miss_count_p = *miss_count_p + 1;
     if (oldestTime == -1) {
-        printf("MISS\n");
+        // printf("MISS\n");
         // open lines available
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
         cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
         return "miss";
     } else {
-        printf("MISS EVICT\n");
+        // printf("MISS EVICT\n");
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
         // update evict count
