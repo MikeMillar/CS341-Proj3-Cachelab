@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
 }
 
 void loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
-     int leastRecentIndex = 0;
+    int leastRecentIndex = 0;
     long oldestTime = -1;
     // iterate through set lines
     for (int line = 0; line < E; line++) {
@@ -180,7 +180,7 @@ void loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
         Line_t setLine = cacheSets[set * E + line];
         // if line valid, and tag matches
         if (setLine.valid) {
-            if (tag == setLine.tag) {}
+            if (tag == setLine.tag) {
                 // update hit count, last_used, and return
                 *hit_count_p = *hit_count_p + 1;
                 setLine.last_used = time(NULL);
