@@ -13,6 +13,7 @@ struct Line {
 
 typedef struct Line Line_t;
 
+void initializeCache(Line_t sets[], int set_count, int E);
 void printHelp();
 void printError(char* msg);
 
@@ -89,12 +90,8 @@ int main(int argc, char *argv[]) {
 
     // Initialize data structures
     int set_count = pow(2, s);
-    Line_t cacheSets[set_count][E];
-    for (int i = 0; i < set_count; i++) {
-        for (int j = 0; j < E; j++) {
-            cacheSets[i][j].valid = 0;
-        }
-    }
+    Line_t cacheSets[set_count * E];
+    initializeCache(cacheSets, set_count, E);
 
     int hit_count = 0;
     int miss_count = 0;
@@ -106,6 +103,14 @@ int main(int argc, char *argv[]) {
     // Print Summary
     printSummary(hit_count, miss_count, eviction_count);
     return 0;
+}
+
+void initializeCache(Line_t sets[], int set_count, int E) {
+    for (int set = 0; i < set_count; set++) {
+        for (int lineOffset = 0; lineOffset < E; lineOffset++) {
+            cacheSets[set * E + lineOffset].valid = 0;
+        }
+    }
 }
 
 void printHelp() {
