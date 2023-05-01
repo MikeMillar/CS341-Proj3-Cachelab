@@ -116,23 +116,29 @@ int main(int argc, char *argv[]) {
             if (buff[0] != ' ') {
                 continue;
             }
-            char line[MAX_LENGTH];
-            strcpy(line, buff);
-            memmove(line, line+1, strlen(line));
-            line[strcspn(line, "\n")] = 0;
-            // extract instruction data
-            // find end of address
-            char* c = strchr(buff, ',');
-            end = (int)(c - buff);
+
+            char instruction;
+            char addStr[MAX_LENGTH];
+            sscanf(buff, " %c %s,", &instruction, addStr);
+
+            // char line[MAX_LENGTH];
+            // strcpy(line, buff);
+            // memmove(line, line+1, strlen(line));
+            // line[strcspn(line, "\n")] = 0;
+            // // extract instruction data
+            // // find end of address
+            // char* c = strchr(buff, ',');
+            // end = strlen(addStr);
+            // printf("end=%d\n", end);
 
             // parse address
-            char addStr[end-start+1];
-            substring(addStr, buff, start, end);
+            // char addStr[end-start+1];
+            // substring(addStr, buff, start, end);
             unsigned long address = strtoul(addStr, NULL, 16);
             // extract set
             long set = extract(address, s, b);
             // extract tag
-            long tag = extract(address, (end-start)*4-(s+b), s+b);
+            long tag = extract(address, 64-(s+b), s+b);
 
             // Validate set
             if (set >= set_count) {
@@ -144,7 +150,7 @@ int main(int argc, char *argv[]) {
             char res_out[MAX_LENGTH];
             char* result;
             char* tmp;
-            switch (buff[1])
+            switch (instruction)
             {
             case 'L':
                 // TODO: Load data
