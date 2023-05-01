@@ -169,6 +169,7 @@ int main(int argc, char *argv[]) {
                 // TODO: Modify data  
                 result = loadData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
                 tmp = saveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
+                printf("%s %s\n", result, tmp);
                 strcat(res_out, result);
                 strcat(res_out, " ");
                 strcat(res_out, tmp);
