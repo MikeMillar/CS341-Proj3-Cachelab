@@ -4,25 +4,29 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 #include "cachelab.h"
 
 /* define line max length */
 #define MAX_LENGTH 255
 
+/* define Line struct and typedef */
 struct Line {
     int valid;
-    char* tag;
-    char* data;
+    int tag;
+    long last_used;
 };
-
 typedef struct Line Line_t;
 
+/* Function prototypes */
+void loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
+void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
+void evict(Line_t cacheSets[], int tag, int set, int E, int line);
 void initializeCache(Line_t sets[], int set_count, int E);
-void extractAddress(char address[], char line[], int start, int end);
+void substring(char newStr[], char str[], int start, int end);
+int extract(int num, int length, int offset);
 void printHelp();
 void printError(char* msg);
-
-
 
 int main(int argc, char *argv[]) {
     // Parse command line arguments
@@ -116,20 +120,40 @@ int main(int argc, char *argv[]) {
                 continue;
             }
             // extract instruction data
+            // find end of address
             char* c = strchr(buff, ',');
             end = (int)(c - buff);
-            char address[end-start+1];
+
+            // parse address
+            char addStr[end-start+1];
+            substring(addStr, buff, start, end);
+            unsigned long address = stroul(addStr, NULL, 16);
+            // extract set
+            int set = extract(address, s, b);
+            // extract tag
+            int tag = extract(address, (end-start)*4-(s+b), s+b);
+
+            // Validate set
+            if (set >= set_count) {
+                printError(strcat("Invalid set: ", setStr));
+                return 2;
+            }
+
             // Determine which operation to perform
             switch (buff[1])
             {
             case 'L':
                 // TODO: Load data
+                loadData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
                 break;
             case 'S':
                 // TODO: Store data
+                saveData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
                 break;
             case 'M':
                 // TODO: Modify data
+                loadData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
+                saveData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
                 break;
             default:
                 // If not valid instruction, skip.
@@ -147,18 +171,83 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+void loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
+    // iterate through set lines
+    for (int line = 0; line < E; line++) {
+        // get line
+        Line_t setLine = cacheSets[set * E + line];
+        // if line valid, and tag matches
+        if (setLine.valid && tag == setLine.tag) {
+            // update hit count, last_used, and return
+            *hit_count_p++;
+            setLine.last_used = time(NULL);
+            return;
+        }
+    }
+    // no valid and matching tab, miss
+    *miss_count_p++;
+}
+
+void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
+    int leastRecentIndex = 0;
+    long oldestTime = -1;
+    // iterate through set lines
+    for (int line = 0; line < E; line++) {
+        // get line
+        Line_t setLine = cacheSets[set * E + line];
+        // if line valid, and tag matches
+        if (setLine.valid) {
+            if (tag == setLine.tag) {
+                // update hit count and return
+                *hit_count_p++;
+                return;
+            }
+            // valid, but not matching tag
+            if (oldestTime == -1 || setLine.last_used < oldestTime) {
+                // new least recently used found, update variables
+                oldestTime = setLine.last_used;
+                leastRecentIndex = line;
+            }
+        }
+    }
+    // no match found, need to save/evict
+    if (oldestTime == -1) {
+        // open lines available
+        Line_t setLine = cacheSets[set * E + leastRecentIndex];
+        setLine.valid = 1;
+        setLine.tag = tag;
+    } else {
+        // no open line, evict oldest
+        evict(cacheSets, tag, set, E, leastRecentIndex);
+        // update evict count
+        *eviction_count_p++;
+    }    
+}
+
+void evict(Line_t cacheSets[], int tag, int set, int E, int line) {
+    Line_t setLine = cacheSets[set * E + line];
+    setLine.valid = 1;
+    setLine.tag = tag;
+}
+
 void initializeCache(Line_t sets[], int set_count, int E) {
     for (int set = 0; set < set_count; set++) {
         for (int lineOffset = 0; lineOffset < E; lineOffset++) {
             sets[set * E + lineOffset].valid = 0;
+            sets[set * E + lineOffset].last_used = -1;
         }
     }
 }
 
-void extractAddress(char address[], char line[], int start, int end) {
+void substring(char newStr[], char str[], int start, int end) {
     for (; start < end; start++) {
         address[start] = line[start];
     }
+}
+
+int extract(int num, int length, int offset) {
+    int mask = pow(2, length) - 1;
+    return (int)(num >> offset) & mask;
 }
 
 void printHelp() {
