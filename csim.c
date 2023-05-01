@@ -19,9 +19,9 @@ struct Line {
 typedef struct Line Line_t;
 
 /* Function prototypes */
-void loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
-void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
-void evict(Line_t cacheSets[], int tag, int set, int E, int line);
+char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
+char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
+void evict(Line_t cacheSets[], long tag, long set, int E, int line);
 void initializeCache(Line_t sets[], int set_count, int E);
 void substring(char newStr[], char str[], int start, int end);
 int extract(int num, int length, int offset);
@@ -74,9 +74,6 @@ int main(int argc, char *argv[]) {
         printHelp();
         return 0;
     }
-    if (v) {
-        printf("Verbose printouts enabled.");
-    }
 
     // Check all required arguments set
     if (s == -1) {
@@ -119,6 +116,8 @@ int main(int argc, char *argv[]) {
             if (buff[0] != ' ') {
                 continue;
             }
+            char line[strlen(buff)];
+            substring(line,1,strlen(buff));
             // extract instruction data
             // find end of address
             char* c = strchr(buff, ',');
@@ -129,9 +128,9 @@ int main(int argc, char *argv[]) {
             substring(addStr, buff, start, end);
             unsigned long address = strtoul(addStr, NULL, 16);
             // extract set
-            int set = extract(address, s, b);
+            long set = extract(address, s, b);
             // extract tag
-            int tag = extract(address, (end-start)*4-(s+b), s+b);
+            long tag = extract(address, (end-start)*4-(s+b), s+b);
 
             // Validate set
             if (set >= set_count) {
@@ -140,20 +139,24 @@ int main(int argc, char *argv[]) {
             }
 
             // Determine which operation to perform
+            char* result;
             switch (buff[1])
             {
             case 'L':
                 // TODO: Load data
-                loadData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
+                result = loadData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
                 break;
             case 'S':
                 // TODO: Store data
-                saveData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
+                result = saveData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
                 break;
             case 'M':
                 // TODO: Modify data
-                loadData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
-                saveData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
+                char* tmp;
+                result = loadData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
+                tmp = saveData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
+                strcat(result, " ");
+                strcat(result, tmp);
                 break;
             default:
                 // If not valid instruction, skip.
@@ -161,7 +164,9 @@ int main(int argc, char *argv[]) {
                 printError(strcat("Invalid instruction found: ", buff));
                 break;
             }
-
+            if (v) {
+                printf("%s %s\n", line, result);
+            }
         }
     }
     fclose(traceFile);
@@ -171,7 +176,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
+char* loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
     int leastRecentIndex = 0;
     long oldestTime = -1;
     // iterate through set lines
@@ -184,7 +189,7 @@ void loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
                 // update hit count, last_used, and return
                 *hit_count_p = *hit_count_p + 1;
                 setLine.last_used = time(NULL);
-                return;
+                return "hit";
             }
             // valid, but not matching tag
             if (oldestTime == -1 || setLine.last_used < oldestTime) {
@@ -201,15 +206,17 @@ void loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
         cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
+        return "miss"
     } else {
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
         // update evict count
         *eviction_count_p = *eviction_count_p + 1;
+        return "miss eviction";
     }    
 }
 
-void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
+char* saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
     int leastRecentIndex = 0;
     long oldestTime = -1;
     // iterate through set lines
@@ -221,7 +228,7 @@ void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
             if (tag == setLine.tag) {
                 // update hit count and return
                 *hit_count_p = *hit_count_p + 1;
-                return;
+                return "hit";
             }
             // valid, but not matching tag
             if (oldestTime == -1 || setLine.last_used < oldestTime) {
@@ -238,11 +245,13 @@ void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
         cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
+        return "miss"
     } else {
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
         // update evict count
         *eviction_count_p = *eviction_count_p + 1;
+        return "miss eviction";
     }    
 }
 
