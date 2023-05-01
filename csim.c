@@ -5,6 +5,7 @@
 #include <math.h>
 #include <string.h>
 #include <time.h>
+#include <limits.h>
 #include "cachelab.h"
 
 /* define line max length */
@@ -196,7 +197,7 @@ char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
     printf("==IN LOAD==\n");
     printf("DATA: tag=%ld, set=%ld\n", tag, set);
     int leastRecentIndex = 0;
-    long oldestTime = -1;
+    long oldestTime = LONG_MAX;
     // iterate through set lines
     for (int line = 0; line < E; line++) {
         // get line
@@ -211,12 +212,11 @@ char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
                 setLine.last_used = time(NULL);
                 return "hit";
             }
-            // valid, but not matching tag
-            if (oldestTime == -1 || setLine.last_used < oldestTime) {
-                // new least recently used found, update variables
-                oldestTime = setLine.last_used;
-                leastRecentIndex = line;
-            }
+        }
+        if (setLine.last_used < oldestTime) {
+            // new least recently used found, update variables
+            oldestTime = setLine.last_used;
+            leastRecentIndex = line;
         }
     }
     // no valid and matching tab, miss
@@ -242,7 +242,7 @@ char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
     printf("==IN SAVE==\n");
     printf("DATA: tag=%ld, set=%ld\n", tag, set);
     int leastRecentIndex = 0;
-    long oldestTime = -1;
+    long oldestTime = LONG_MAX;
     // iterate through set lines
     for (int line = 0; line < E; line++) {
         printf("==IN LINE %d==\n", line);
@@ -257,12 +257,11 @@ char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
                 *hit_count_p = *hit_count_p + 1;
                 return "hit";
             }
-            // valid, but not matching tag
-            if (oldestTime == -1 || setLine.last_used < oldestTime) {
-                // new least recently used found, update variables
-                oldestTime = setLine.last_used;
-                leastRecentIndex = line;
-            }
+        }
+        if (setLine.last_used < oldestTime) {
+            // new least recently used found, update variables
+            oldestTime = setLine.last_used;
+            leastRecentIndex = line;
         }
     }
     // no match found, need to save/evict
