@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
 
             char instruction;
             char addStr[MAX_LENGTH];
-            sscanf(buff, " %c %s,%s", &instruction, addStr);
+            sscanf(buff, " %c %s", &instruction, addStr);
             addStr[strcspn(addStr, ",")] = 0;
             printf("addStr=%s", addStr);
 
