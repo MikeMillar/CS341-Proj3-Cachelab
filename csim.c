@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
     // substring variables
     int start = 3; // start of address
     int end = -1; // end of address, exclusive (to be set)
-    if (file) {
+    if (traceFile) {
         while (fgets(buff, MAX_LENGTH, traceFile)) {
             // Ignore instruction lines
             if (buff[0] != ' ') {
@@ -156,7 +156,9 @@ void initializeCache(Line_t sets[], int set_count, int E) {
 }
 
 void extractAddress(char address[], char line[], int start, int end) {
-
+    for (; start < end; start++) {
+        address[start] = line[start];
+    }
 }
 
 void printHelp() {
