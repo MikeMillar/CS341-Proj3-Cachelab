@@ -121,7 +121,6 @@ int main(int argc, char *argv[]) {
             char addStr[MAX_LENGTH];
             sscanf(buff, " %c %s", &instruction, addStr);
             addStr[strcspn(addStr, ",")] = 0;
-            printf("addStr=%s", addStr);
 
             char line[MAX_LENGTH];
             strcpy(line, buff);
@@ -294,16 +293,10 @@ void substring(char newStr[], char str[], int start, int end) {
 }
 
 long extract(int num, int length, int offset) {
-    printf("num=%d, len=%d, off=%d\n", num, length, offset);
     unsigned long mask = pow(2, length);
-    printf("mask=%ld\n", mask);
     mask--;
-    printf("mask=%ld\n", mask);
-    
     long res = num >> offset;
-    printf("res=%ld\n", res);
     res = res & mask;
-    printf("res=%ld\n", res);
     return res;
     // return (long)(num >> offset) & mask;
 }
