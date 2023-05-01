@@ -180,7 +180,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             if (v) {
-                printf("%s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", line, result_out, addStr, address, set, tag);
+                printf("%s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", line, res_out, addStr, address, set, tag);
                 // printf("%s %s\n", line, result);
             }
         }
