@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
             if (buff[0] != ' ') {
                 continue;
             }
-            char* line;
+            char line[MAX_LENGTH];
             strcpy(line, buff);
             memmove(line, line+1, strlen(line));
             // extract instruction data
