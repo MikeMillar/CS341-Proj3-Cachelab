@@ -116,8 +116,9 @@ int main(int argc, char *argv[]) {
             if (buff[0] != ' ') {
                 continue;
             }
-            char* line = strcpy(buff);
-            memmove(line, line+1, strlen(line))
+            char* line;
+            strcpy(line, buff);
+            memmove(line, line+1, strlen(line));
             // extract instruction data
             // find end of address
             char* c = strchr(buff, ',');
@@ -139,24 +140,28 @@ int main(int argc, char *argv[]) {
             }
 
             // Determine which operation to perform
-            char result[MAX_LENGTH];
-            char tmp;
+            char res_out[MAX_LENGTH];
+            char* result;
+            char* tmp;
             switch (buff[1])
             {
             case 'L':
                 // TODO: Load data
                 result = loadData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
+                strcat(res_out, result);
                 break;
             case 'S':
                 // TODO: Store data
                 result = saveData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
+                strcat(res_out, result);
                 break;
             case 'M':
                 // TODO: Modify data  
                 result = loadData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
                 tmp = saveData(cacheSets, set, tag, E, &hit_count, &miss_count, &eviction_count);
-                strcat(result, " ");
-                strcat(result, tmp);
+                strcat(res_out, result);
+                strcat(res_out, " ");
+                strcat(res_out, tmp);
                 break;
             default:
                 // If not valid instruction, skip.
