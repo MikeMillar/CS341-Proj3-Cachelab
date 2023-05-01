@@ -24,7 +24,7 @@ char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
 void evict(Line_t cacheSets[], long tag, long set, int E, int line);
 void initializeCache(Line_t sets[], int set_count, int E);
 void substring(char newStr[], char str[], int start, int end);
-int extract(int num, int length, int offset);
+long extract(int num, int length, int offset);
 void printHelp();
 void printError(char* msg);
 
@@ -293,9 +293,16 @@ void substring(char newStr[], char str[], int start, int end) {
     }
 }
 
-int extract(int num, int length, int offset) {
-    int mask = pow(2, length) - 1;
-    return (int)(num >> offset) & mask;
+long extract(int num, int length, int offset) {
+    printf("num=%d, len=%d, off=%d\n", num, length, offset);
+    unsigned long mask = pow(2, length) - 1;
+    printf("mask=%ld\n", mask);
+    long res = num >> offset;
+    printf("res=%ld\n", res);
+    res = res & mask;
+    printf("res=%ld\n", res);
+    return res;
+    // return (long)(num >> offset) & mask;
 }
 
 void printHelp() {
