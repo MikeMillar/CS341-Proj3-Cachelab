@@ -119,8 +119,7 @@ int main(int argc, char *argv[]) {
 
             char instruction;
             char addStr[MAX_LENGTH];
-            char offset[MAX_LENGTH];
-            sscanf(buff, " %c %s,%s", &instruction, addStr, offset);
+            sscanf(buff, " %c %s,%s", &instruction, addStr);
             addStr[strcspn(addStr, ",")] = 0;
             printf("addStr=%s", addStr);
 
@@ -180,7 +179,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             if (v) {
-                printf("%c %s,%s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", instruction, addStr, offset, result, addStr, address, set, tag);
+                printf("%c %s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", instruction, addStr, result, addStr, address, set, tag);
                 // printf("%s %s\n", line, result);
             }
         }
