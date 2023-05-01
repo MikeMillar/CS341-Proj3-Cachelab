@@ -108,8 +108,8 @@ int main(int argc, char *argv[]) {
     FILE* traceFile = fopen(trace, "r");
     char buff[MAX_LENGTH];
     // substring variables
-    int start = 3; // start of address
-    int end = -1; // end of address, exclusive (to be set)
+    // int start = 3; // start of address
+    // int end = -1; // end of address, exclusive (to be set)
     if (traceFile) {
         while (fgets(buff, MAX_LENGTH, traceFile)) {
             // Ignore instruction lines
