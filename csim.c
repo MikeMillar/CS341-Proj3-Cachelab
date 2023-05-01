@@ -295,8 +295,11 @@ void substring(char newStr[], char str[], int start, int end) {
 
 long extract(int num, int length, int offset) {
     printf("num=%d, len=%d, off=%d\n", num, length, offset);
-    unsigned long mask = pow(2, length) - 1;
+    unsigned long mask = pow(2, length);
     printf("mask=%ld\n", mask);
+    mask--;
+    printf("mask=%ld\n", mask);
+    
     long res = num >> offset;
     printf("res=%ld\n", res);
     res = res & mask;
