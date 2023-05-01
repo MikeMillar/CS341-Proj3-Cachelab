@@ -206,7 +206,7 @@ char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
         cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
-        return "miss"
+        return "miss";
     } else {
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
@@ -245,7 +245,7 @@ char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
         cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
-        return "miss"
+        return "miss";
     } else {
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
