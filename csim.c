@@ -169,7 +169,6 @@ int main(int argc, char *argv[]) {
                 // TODO: Modify data  
                 result = loadData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
                 tmp = saveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
-                printf("%s %s\n", result, tmp);
                 strcat(res_out, result);
                 strcat(res_out, " ");
                 strcat(res_out, tmp);
@@ -181,7 +180,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             if (v) {
-                printf("%s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", line, result, addStr, address, set, tag);
+                printf("%s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", line, result_out, addStr, address, set, tag);
                 // printf("%s %s\n", line, result);
             }
         }
