@@ -119,6 +119,7 @@ int main(int argc, char *argv[]) {
             char line[MAX_LENGTH];
             strcpy(line, buff);
             memmove(line, line+1, strlen(line));
+            line[strcspn(line, "\n")] = 0;
             // extract instruction data
             // find end of address
             char* c = strchr(buff, ',');
