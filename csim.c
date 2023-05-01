@@ -241,7 +241,7 @@ void initializeCache(Line_t sets[], int set_count, int E) {
 
 void substring(char newStr[], char str[], int start, int end) {
     for (; start < end; start++) {
-        address[start] = str[start];
+        newStr[start] = str[start];
     }
 }
 
