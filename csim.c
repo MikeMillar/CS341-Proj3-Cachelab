@@ -179,13 +179,13 @@ void loadData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
         // if line valid, and tag matches
         if (setLine.valid && tag == setLine.tag) {
             // update hit count, last_used, and return
-            *hit_count_p++;
+            *hit_count_p = *hit_count_p + 1;
             setLine.last_used = time(NULL);
             return;
         }
     }
     // no valid and matching tab, miss
-    *miss_count_p++;
+    *miss_count_p = *miss_count_p + 1;
 }
 
 void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
@@ -199,7 +199,7 @@ void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
         if (setLine.valid) {
             if (tag == setLine.tag) {
                 // update hit count and return
-                *hit_count_p++;
+                *hit_count_p = *hit_count_p + 1;
                 return;
             }
             // valid, but not matching tag
@@ -216,11 +216,12 @@ void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
         cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
+        *miss_count_p = *miss_count_p + 1;
     } else {
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
         // update evict count
-        *eviction_count_p++;
+        *eviction_count_p = *eviction_count_p + 1;
     }    
 }
 
