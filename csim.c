@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
 
             // Validate set
             if (set >= set_count) {
-                printError(strcat("Invalid set: ", setStr));
+                printError(strcat("Invalid set: ", buff));
                 return 2;
             }
 
@@ -213,9 +213,9 @@ void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
     // no match found, need to save/evict
     if (oldestTime == -1) {
         // open lines available
-        Line_t setLine = cacheSets[set * E + leastRecentIndex];
-        setLine.valid = 1;
-        setLine.tag = tag;
+        cacheSets[set * E + leastRecentIndex].valid = 1;
+        cacheSets[set * E + leastRecentIndex].tag = tag;
+        cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
     } else {
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
@@ -225,9 +225,9 @@ void saveData(Line_t cacheSets[], int tag, int set, int E, int* hit_count_p, int
 }
 
 void evict(Line_t cacheSets[], int tag, int set, int E, int line) {
-    Line_t setLine = cacheSets[set * E + line];
-    setLine.valid = 1;
-    setLine.tag = tag;
+    cacheSets[set * E + line].valid = 1;
+    cacheSets[set * E + line].tag = tag;
+    cacheSets[set * E + line].last_used = time(NULL);
 }
 
 void initializeCache(Line_t sets[], int set_count, int E) {
@@ -241,7 +241,7 @@ void initializeCache(Line_t sets[], int set_count, int E) {
 
 void substring(char newStr[], char str[], int start, int end) {
     for (; start < end; start++) {
-        address[start] = line[start];
+        address[start] = str[start];
     }
 }
 
