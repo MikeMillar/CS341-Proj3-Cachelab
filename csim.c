@@ -116,8 +116,8 @@ int main(int argc, char *argv[]) {
             if (buff[0] != ' ') {
                 continue;
             }
-            char line[strlen(buff)];
-            substring(line,buff,1,(int)strlen(buff));
+            char line[MAX_LENGTH];
+            substring(line,buff,1,MAX_LENGTH);
             // extract instruction data
             // find end of address
             char* c = strchr(buff, ',');
