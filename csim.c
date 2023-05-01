@@ -158,12 +158,12 @@ int main(int argc, char *argv[]) {
             case 'L':
                 // TODO: Load data
                 result = loadData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
-                strcat(res_out, result);
+                strcpy(res_out, result);
                 break;
             case 'S':
                 // TODO: Store data
                 result = saveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
-                strcat(res_out, result);
+                strcpy(res_out, result);
                 break;
             case 'M':
                 // TODO: Modify data  
