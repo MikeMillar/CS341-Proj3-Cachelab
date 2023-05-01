@@ -201,7 +201,7 @@ char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
     for (int line = 0; line < E; line++) {
         // get line
         Line_t setLine = cacheSets[set * E + line];
-        printf("set=%ld, line=%d, valid=%d, tag=%d\n", set, line, setLine.valid, setLine.tag);
+        printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
         // if line valid, and tag matches
         if (setLine.valid) {
             if (tag == setLine.tag) {
@@ -247,7 +247,7 @@ char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
     for (int line = 0; line < E; line++) {
         // get line
         Line_t setLine = cacheSets[set * E + line];
-        printf("set=%ld, line=%d, valid=%d, tag=%d\n", set, line, setLine.valid, setLine.tag);
+        printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
         // if line valid, and tag matches
         if (setLine.valid) {
             if (tag == setLine.tag) {
