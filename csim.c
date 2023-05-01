@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
 void initializeCache(Line_t sets[], int set_count, int E) {
     for (int set = 0; set < set_count; set++) {
         for (int lineOffset = 0; lineOffset < E; lineOffset++) {
-            cacheSets[set * E + lineOffset].valid = 0;
+            sets[set * E + lineOffset].valid = 0;
         }
     }
 }
