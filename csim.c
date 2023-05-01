@@ -123,12 +123,14 @@ int main(int argc, char *argv[]) {
             addStr[strcspn(addStr, ",")] = 0;
             printf("addStr=%s", addStr);
 
-            // char line[MAX_LENGTH];
-            // strcpy(line, buff);
-            // memmove(line, line+1, strlen(line));
-            // line[strcspn(line, "\n")] = 0;
-            // // extract instruction data
-            // // find end of address
+            char line[MAX_LENGTH];
+            strcpy(line, buff);
+            memmove(line, line+1, strlen(line));
+            line[strcspn(line, "\n")] = 0;
+
+            // extract instruction data
+            // find end of address
+
             // char* c = strchr(buff, ',');
             // end = strlen(addStr);
             // printf("end=%d\n", end);
@@ -179,7 +181,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             if (v) {
-                printf("%c %s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", instruction, addStr, result, addStr, address, set, tag);
+                printf("%s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", line, addStr, result, addStr, address, set, tag);
                 // printf("%s %s\n", line, result);
             }
         }
