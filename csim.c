@@ -29,6 +29,8 @@ long extract(int num, int length, int offset);
 void printHelp();
 void printError(char* msg);
 
+int d = -1;
+
 int main(int argc, char *argv[]) {
     // Parse command line arguments
     // -h: help
@@ -46,7 +48,7 @@ int main(int argc, char *argv[]) {
 
     // Parse arguments
     int opt;
-    while ((opt = getopt(argc, argv, "hvs:E:b:t:")) != -1) {
+    while ((opt = getopt(argc, argv, "hvd:s:E:b:t:")) != -1) {
         switch (opt)
         {
         case 'h':
@@ -54,6 +56,9 @@ int main(int argc, char *argv[]) {
             break;
         case 'v':
             v = 1;
+            break;
+        case 'd':
+            d = atoi(optarg);
             break;
         case 's':
             s = atoi(optarg);
@@ -180,10 +185,14 @@ int main(int argc, char *argv[]) {
                 printError(strcat("Invalid instruction found: ", buff));
                 break;
             }
+            if (d != -1) {
+                printSet(d);
+            }
             if (v) {
                 // printf("%s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", line, res_out, addStr, address, set, tag);
                 printf("%s %s\n", line, res_out);
             }
+        
         }
     }
     fclose(traceFile);
@@ -194,6 +203,9 @@ int main(int argc, char *argv[]) {
 }
 
 char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
+    if (d != -1) {
+        printSet(d);
+    }
     // printf("==IN LOAD==\n");
     // printf("DATA: tag=%ld, set=%ld\n", tag, set);
     int leastRecentIndex = 0;
