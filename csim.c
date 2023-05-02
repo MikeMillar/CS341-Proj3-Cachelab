@@ -223,7 +223,8 @@ char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_cou
                 // printf("HIT\n");
                 // update hit count, last_used, and return
                 *hit_count_p = *hit_count_p + 1;
-                setLine.last_used = traceLine;
+                cacheSets[set * E + line].last_used = traceLine;
+                // setLine.last_used = traceLine;
                 // decrementUnused(cacheSets, set, E, line);
                 return "hit";
             }
@@ -310,7 +311,7 @@ void printError(char* msg) {
 }
 
 void printSet(Line_t cacheSets[], int E, int set) {
-    printf("==Printing set %d on traceLine%d==\n", set, traceLine);
+    printf("==Printing set %d on traceLine %d==\n", set, traceLine);
     for (int i = 0; i < E; i++) {
         Line_t line = cacheSets[set * E + i];
         printf("\tvalid=%d, tag=%ld, last_used=%ld\n", line.valid, line.tag, line.last_used);
