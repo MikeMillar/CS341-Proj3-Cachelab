@@ -30,7 +30,6 @@ void printHelp();
 void printError(char* msg);
 void printSet(Line_t cacheSets[], int E, int set);
 
-int d = -1;
 int traceLine = 0;
 
 int main(int argc, char *argv[]) {
@@ -50,7 +49,7 @@ int main(int argc, char *argv[]) {
 
     // Parse arguments
     int opt;
-    while ((opt = getopt(argc, argv, "hvd:s:E:b:t:")) != -1) {
+    while ((opt = getopt(argc, argv, "hvs:E:b:t:")) != -1) {
         switch (opt)
         {
         case 'h':
@@ -58,9 +57,6 @@ int main(int argc, char *argv[]) {
             break;
         case 'v':
             v = 1;
-            break;
-        case 'd':
-            d = atoi(optarg);
             break;
         case 's':
             s = atoi(optarg);
@@ -112,12 +108,9 @@ int main(int argc, char *argv[]) {
     int eviction_count = 0;
     // End initialization
 
-    // TODO: Read in trace line-by-line and simulate cache
+    // Read in trace line-by-line and simulate cache
     FILE* traceFile = fopen(trace, "r");
     char buff[MAX_LENGTH];
-    // substring variables
-    // int start = 3; // start of address
-    // int end = -1; // end of address, exclusive (to be set)
     if (traceFile) {
         while (fgets(buff, MAX_LENGTH, traceFile)) {
             // Ignore instruction lines
@@ -136,15 +129,7 @@ int main(int argc, char *argv[]) {
             line[strcspn(line, "\n")] = 0;
 
             // extract instruction data
-            // find end of address
-
-            // char* c = strchr(buff, ',');
-            // end = strlen(addStr);
-            // printf("end=%d\n", end);
-
             // parse address
-            // char addStr[end-start+1];
-            // substring(addStr, buff, start, end);
             unsigned long address = strtoul(addStr, NULL, 16);
             // extract set
             long set = extract(address, s, b);
@@ -164,17 +149,17 @@ int main(int argc, char *argv[]) {
             switch (instruction)
             {
             case 'L':
-                // TODO: Load data
+                // Load data
                 result = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
                 strcpy(res_out, result);
                 break;
             case 'S':
-                // TODO: Store data
+                // Store data
                 result = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
                 strcpy(res_out, result);
                 break;
             case 'M':
-                // TODO: Modify data  
+                // Modify data  
                 result = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
                 tmp = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
                 strcpy(res_out, result);
@@ -187,11 +172,7 @@ int main(int argc, char *argv[]) {
                 printError(strcat("Invalid instruction found: ", buff));
                 break;
             }
-            if (d != -1 && ((int) set) == d) {
-                printSet(cacheSets, E, d);
-            }
             if (v) {
-                // printf("%s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", line, res_out, addStr, address, set, tag);
                 printf("%s %s\n", line, res_out);
             }
             traceLine++;
@@ -205,53 +186,38 @@ int main(int argc, char *argv[]) {
 }
 
 char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
-    if (d != -1 && ((int) set) == d) {
-        printSet(cacheSets, E, d);
-    }
-    // printf("==IN LOAD==\n");
-    // printf("DATA: tag=%ld, set=%ld\n", tag, set);
     int leastRecentIndex = 0;
     long oldestTime = LONG_MAX;
     // iterate through set lines
     for (int line = 0; line < E; line++) {
         // get line
         Line_t setLine = cacheSets[set * E + line];
-        // printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
         // if line valid, and tag matches
         if (setLine.valid) {
             if (tag == setLine.tag) {
-                // printf("HIT\n");
                 // update hit count, last_used, and return
                 *hit_count_p = *hit_count_p + 1;
                 cacheSets[set * E + line].last_used = traceLine;
-                // setLine.last_used = traceLine;
-                // decrementUnused(cacheSets, set, E, line);
                 return "hit";
             }
         }
         if (setLine.last_used < oldestTime) {
             // new least recently used found, update variables
-            // printf("New oldest: time=%ld, index=%d\n", setLine.last_used, line);
             oldestTime = setLine.last_used;
             leastRecentIndex = line;
         }
     }
-    // printf("After lines: oldest=%ld, index=%d\n", oldestTime, leastRecentIndex);
     // no valid and matching tab, miss
     *miss_count_p = *miss_count_p + 1;
     if (!cacheSets[set * E + leastRecentIndex].valid) {
-        // printf("MISS\n");
         // open lines available
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
         cacheSets[set * E + leastRecentIndex].last_used = traceLine;
-        // decrementUnused(cacheSets, set, E, leastRecentIndex);
         return "miss";
     } else {
-        // printf("MISS EVICT\n");
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
-        // decrementUnused(cacheSets, set, E, leastRecentIndex);
         // update evict count
         *eviction_count_p = *eviction_count_p + 1;
         return "miss eviction";
@@ -263,14 +229,6 @@ void evict(Line_t cacheSets[], long tag, long set, int E, int line) {
     cacheSets[set * E + line].tag = tag;
     cacheSets[set * E + line].last_used = traceLine;
 }
-
-// void decrementUnused(Line_t cacheSets[], long set, int E, int usedIndex) {
-//     for (int i = 0; i < E; i++) {
-//         if (i != usedIndex) {
-//             cacheSets[set * E + i].last_used = cacheSets[set * E + i].last_used - 1;
-//         }
-//     }
-// }
 
 void initializeCache(Line_t sets[], int set_count, int E) {
     for (int set = 0; set < set_count; set++) {
@@ -293,7 +251,6 @@ long extract(int num, int length, int offset) {
     long res = num >> offset;
     res = res & mask;
     return res;
-    // return (long)(num >> offset) & mask;
 }
 
 void printHelp() {
@@ -308,12 +265,4 @@ void printHelp() {
 
 void printError(char* msg) {
     fprintf(stderr, "%s\n", msg);
-}
-
-void printSet(Line_t cacheSets[], int E, int set) {
-    printf("==Printing set %d on traceLine %d==\n", set, traceLine);
-    for (int i = 0; i < E; i++) {
-        Line_t line = cacheSets[set * E + i];
-        printf("\tvalid=%d, tag=%ld, last_used=%ld\n", line.valid, line.tag, line.last_used);
-    }
 }
