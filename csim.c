@@ -28,6 +28,7 @@ void substring(char newStr[], char str[], int start, int end);
 long extract(int num, int length, int offset);
 void printHelp();
 void printError(char* msg);
+void printSet(Line_t cacheSets[], int E, int set);
 
 int d = -1;
 
@@ -186,7 +187,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             if (d != -1) {
-                printSet(d);
+                printSet(cacheSets, E, d);
             }
             if (v) {
                 // printf("%s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", line, res_out, addStr, address, set, tag);
@@ -204,7 +205,7 @@ int main(int argc, char *argv[]) {
 
 char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
     if (d != -1) {
-        printSet(d);
+        printSet(cacheSets, E, d);
     }
     // printf("==IN LOAD==\n");
     // printf("DATA: tag=%ld, set=%ld\n", tag, set);
@@ -305,4 +306,12 @@ void printHelp() {
 
 void printError(char* msg) {
     fprintf(stderr, "%s\n", msg);
+}
+
+void printSet(Line_t cacheSets[], int E, int set) {
+    printf("==Printing set %d==\n", set);
+    for (int i = 0; i < E; i++) {
+        Line_t line = cacheSets[set * E + i];
+        printf("\tvalid=%d, tag=%ld, last_used=%ld\n", line.valid, line.tag, line.last_used);
+    }
 }
