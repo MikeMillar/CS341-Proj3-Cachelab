@@ -216,6 +216,7 @@ char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_cou
         }
         if (setLine.last_used < oldestTime) {
             // new least recently used found, update variables
+            printf("New oldest: time=%ld, index=%d\n", setLine.last_used, line);
             oldestTime = setLine.last_used;
             leastRecentIndex = line;
         }
