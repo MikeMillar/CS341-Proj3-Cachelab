@@ -195,14 +195,14 @@ int main(int argc, char *argv[]) {
 
 char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
     // printf("==IN LOAD==\n");
-    // printf("DATA: tag=%ld, set=%ld\n", tag, set);
+    printf("DATA: tag=%ld, set=%ld\n", tag, set);
     int leastRecentIndex = 0;
     long oldestTime = LONG_MAX;
     // iterate through set lines
     for (int line = 0; line < E; line++) {
         // get line
         Line_t setLine = cacheSets[set * E + line];
-        // printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
+        printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
         // if line valid, and tag matches
         if (setLine.valid) {
             if (tag == setLine.tag) {
@@ -220,6 +220,7 @@ char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_cou
             leastRecentIndex = line;
         }
     }
+    printf("After lines: oldest=%ld, index=%d\n", oldestTime, leastRecentIndex);
     // no valid and matching tab, miss
     *miss_count_p = *miss_count_p + 1;
     if (oldestTime == LONG_MIN) {
