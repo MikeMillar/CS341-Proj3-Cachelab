@@ -20,9 +20,9 @@ struct Line {
 typedef struct Line Line_t;
 
 /* Function prototypes */
-char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
-char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
+char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
 void evict(Line_t cacheSets[], long tag, long set, int E, int line);
+void decrementUnused(Line_t cacheSets[], long set, int E, int usedIndex);
 void initializeCache(Line_t sets[], int set_count, int E);
 void substring(char newStr[], char str[], int start, int end);
 long extract(int num, int length, int offset);
@@ -158,18 +158,18 @@ int main(int argc, char *argv[]) {
             {
             case 'L':
                 // TODO: Load data
-                result = loadData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
+                result = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
                 strcpy(res_out, result);
                 break;
             case 'S':
                 // TODO: Store data
-                result = saveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
+                result = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
                 strcpy(res_out, result);
                 break;
             case 'M':
                 // TODO: Modify data  
-                result = loadData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
-                tmp = saveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
+                result = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
+                tmp = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
                 strcpy(res_out, result);
                 strcat(res_out, " ");
                 strcat(res_out, tmp);
@@ -193,7 +193,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
+char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
     // printf("==IN LOAD==\n");
     // printf("DATA: tag=%ld, set=%ld\n", tag, set);
     int leastRecentIndex = 0;
@@ -209,7 +209,8 @@ char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
                 // printf("HIT\n");
                 // update hit count, last_used, and return
                 *hit_count_p = *hit_count_p + 1;
-                setLine.last_used = time(NULL);
+                setLine.last_used = 0;
+                decrementUnused(cacheSets, set, E, line);
                 return "hit";
             }
         }
@@ -221,62 +222,19 @@ char* loadData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
     }
     // no valid and matching tab, miss
     *miss_count_p = *miss_count_p + 1;
-    if (oldestTime == -1) {
+    if (oldestTime == LONG_MIN) {
         // printf("MISS\n");
         // open lines available
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
-        cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
+        cacheSets[set * E + leastRecentIndex].last_used = 0;
+        decrementUnused(cacheSets, set, E, leastRecentIndex);
         return "miss";
     } else {
         // printf("MISS EVICT\n");
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
-        // update evict count
-        *eviction_count_p = *eviction_count_p + 1;
-        return "miss eviction";
-    }    
-}
-
-char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
-    // printf("==IN SAVE==\n");
-    // printf("DATA: tag=%ld, set=%ld\n", tag, set);
-    int leastRecentIndex = 0;
-    long oldestTime = LONG_MAX;
-    // iterate through set lines
-    for (int line = 0; line < E; line++) {
-        // printf("==IN LINE %d==\n", line);
-        // get line
-        Line_t setLine = cacheSets[set * E + line];
-        // printf("set=%ld, line=%d, valid=%d, tag=%ld\n", set, line, setLine.valid, setLine.tag);
-        // if line valid, and tag matches
-        if (setLine.valid) {
-            if (tag == setLine.tag) {
-                // printf("HIT\n");
-                // update hit count and return
-                *hit_count_p = *hit_count_p + 1;
-                return "hit";
-            }
-        }
-        if (setLine.last_used < oldestTime) {
-            // new least recently used found, update variables
-            oldestTime = setLine.last_used;
-            leastRecentIndex = line;
-        }
-    }
-    // no match found, need to save/evict
-    *miss_count_p = *miss_count_p + 1;
-    if (oldestTime == -1) {
-        // printf("MISS\n");
-        // open lines available
-        cacheSets[set * E + leastRecentIndex].valid = 1;
-        cacheSets[set * E + leastRecentIndex].tag = tag;
-        cacheSets[set * E + leastRecentIndex].last_used = time(NULL);
-        return "miss";
-    } else {
-        // printf("MISS EVICT\n");
-        // no open line, evict oldest
-        evict(cacheSets, tag, set, E, leastRecentIndex);
+        decrementUnused(cacheSets, set, E, leastRecentIndex);
         // update evict count
         *eviction_count_p = *eviction_count_p + 1;
         return "miss eviction";
@@ -286,14 +244,22 @@ char* saveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, 
 void evict(Line_t cacheSets[], long tag, long set, int E, int line) {
     cacheSets[set * E + line].valid = 1;
     cacheSets[set * E + line].tag = tag;
-    cacheSets[set * E + line].last_used = time(NULL);
+    cacheSets[set * E + line].last_used = 0;
+}
+
+void decrementUnused(Line_t cacheSets[], long set, int E, int usedIndex) {
+    for (int i = 0; i < E; i++) {
+        if (i != usedIndex) {
+            cacheSets[set * E + i].last_used = cacheSets[set * E + i].last_used - 1;
+        }
+    }
 }
 
 void initializeCache(Line_t sets[], int set_count, int E) {
     for (int set = 0; set < set_count; set++) {
         for (int lineOffset = 0; lineOffset < E; lineOffset++) {
             sets[set * E + lineOffset].valid = 0;
-            sets[set * E + lineOffset].last_used = -1;
+            sets[set * E + lineOffset].last_used = LONG_MIN;
         }
     }
 }
