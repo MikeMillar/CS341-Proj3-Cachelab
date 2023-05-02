@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
                 printError(strcat("Invalid instruction found: ", buff));
                 break;
             }
-            if (d != -1) {
+            if (d != -1 && ((int) set) == d) {
                 printSet(cacheSets, E, d);
             }
             if (v) {
@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
 }
 
 char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
-    if (d != -1) {
+    if (d != -1 && ((int) set) == d) {
         printSet(cacheSets, E, d);
     }
     // printf("==IN LOAD==\n");
