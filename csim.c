@@ -224,7 +224,7 @@ char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_cou
     printf("After lines: oldest=%ld, index=%d\n", oldestTime, leastRecentIndex);
     // no valid and matching tab, miss
     *miss_count_p = *miss_count_p + 1;
-    if (oldestTime == LONG_MAX) {
+    if (!char[set * E + leastRecentIndex].valid) {
         // printf("MISS\n");
         // open lines available
         cacheSets[set * E + leastRecentIndex].valid = 1;
