@@ -209,7 +209,7 @@ char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_cou
                 // printf("HIT\n");
                 // update hit count, last_used, and return
                 *hit_count_p = *hit_count_p + 1;
-                setLine.last_used = 0;
+                setLine.last_used = LONG_MAX;
                 decrementUnused(cacheSets, set, E, line);
                 return "hit";
             }
@@ -229,7 +229,7 @@ char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_cou
         // open lines available
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
-        cacheSets[set * E + leastRecentIndex].last_used = 0;
+        cacheSets[set * E + leastRecentIndex].last_used = LONG_MAX;
         decrementUnused(cacheSets, set, E, leastRecentIndex);
         return "miss";
     } else {
@@ -246,7 +246,7 @@ char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_cou
 void evict(Line_t cacheSets[], long tag, long set, int E, int line) {
     cacheSets[set * E + line].valid = 1;
     cacheSets[set * E + line].tag = tag;
-    cacheSets[set * E + line].last_used = 0;
+    cacheSets[set * E + line].last_used = LONG_MAX;
 }
 
 void decrementUnused(Line_t cacheSets[], long set, int E, int usedIndex) {
