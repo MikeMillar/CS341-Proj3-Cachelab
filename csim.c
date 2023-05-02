@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <time.h>
 #include <limits.h>
 #include "cachelab.h"
 
