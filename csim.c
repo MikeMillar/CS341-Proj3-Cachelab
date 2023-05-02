@@ -22,7 +22,7 @@ typedef struct Line Line_t;
 /* Function prototypes */
 char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
 void evict(Line_t cacheSets[], long tag, long set, int E, int line);
-void decrementUnused(Line_t cacheSets[], long set, int E, int usedIndex);
+// void decrementUnused(Line_t cacheSets[], long set, int E, int usedIndex);
 void initializeCache(Line_t sets[], int set_count, int E);
 void substring(char newStr[], char str[], int start, int end);
 long extract(int num, int length, int offset);
@@ -31,6 +31,7 @@ void printError(char* msg);
 void printSet(Line_t cacheSets[], int E, int set);
 
 int d = -1;
+int traceLine = 0;
 
 int main(int argc, char *argv[]) {
     // Parse command line arguments
@@ -193,7 +194,7 @@ int main(int argc, char *argv[]) {
                 // printf("%s %s, addStr=%s, address=%ld, s=%ld, t=%ld\n", line, res_out, addStr, address, set, tag);
                 printf("%s %s\n", line, res_out);
             }
-        
+            traceLine++;
         }
     }
     fclose(traceFile);
@@ -222,8 +223,8 @@ char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_cou
                 // printf("HIT\n");
                 // update hit count, last_used, and return
                 *hit_count_p = *hit_count_p + 1;
-                setLine.last_used = LONG_MAX;
-                decrementUnused(cacheSets, set, E, line);
+                setLine.last_used = traceLine;
+                // decrementUnused(cacheSets, set, E, line);
                 return "hit";
             }
         }
@@ -242,14 +243,14 @@ char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_cou
         // open lines available
         cacheSets[set * E + leastRecentIndex].valid = 1;
         cacheSets[set * E + leastRecentIndex].tag = tag;
-        cacheSets[set * E + leastRecentIndex].last_used = LONG_MAX;
-        decrementUnused(cacheSets, set, E, leastRecentIndex);
+        cacheSets[set * E + leastRecentIndex].last_used = traceLine;
+        // decrementUnused(cacheSets, set, E, leastRecentIndex);
         return "miss";
     } else {
         // printf("MISS EVICT\n");
         // no open line, evict oldest
         evict(cacheSets, tag, set, E, leastRecentIndex);
-        decrementUnused(cacheSets, set, E, leastRecentIndex);
+        // decrementUnused(cacheSets, set, E, leastRecentIndex);
         // update evict count
         *eviction_count_p = *eviction_count_p + 1;
         return "miss eviction";
@@ -259,22 +260,22 @@ char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_cou
 void evict(Line_t cacheSets[], long tag, long set, int E, int line) {
     cacheSets[set * E + line].valid = 1;
     cacheSets[set * E + line].tag = tag;
-    cacheSets[set * E + line].last_used = LONG_MAX;
+    cacheSets[set * E + line].last_used = traceLine;
 }
 
-void decrementUnused(Line_t cacheSets[], long set, int E, int usedIndex) {
-    for (int i = 0; i < E; i++) {
-        if (i != usedIndex) {
-            cacheSets[set * E + i].last_used = cacheSets[set * E + i].last_used - 1;
-        }
-    }
-}
+// void decrementUnused(Line_t cacheSets[], long set, int E, int usedIndex) {
+//     for (int i = 0; i < E; i++) {
+//         if (i != usedIndex) {
+//             cacheSets[set * E + i].last_used = cacheSets[set * E + i].last_used - 1;
+//         }
+//     }
+// }
 
 void initializeCache(Line_t sets[], int set_count, int E) {
     for (int set = 0; set < set_count; set++) {
         for (int lineOffset = 0; lineOffset < E; lineOffset++) {
             sets[set * E + lineOffset].valid = 0;
-            sets[set * E + lineOffset].last_used = LONG_MAX;
+            sets[set * E + lineOffset].last_used = -1;
         }
     }
 }
