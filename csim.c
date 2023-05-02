@@ -310,7 +310,7 @@ void printError(char* msg) {
 }
 
 void printSet(Line_t cacheSets[], int E, int set) {
-    printf("==Printing set %d==\n", set);
+    printf("==Printing set %d on traceLine%d==\n", set, traceLine);
     for (int i = 0; i < E; i++) {
         Line_t line = cacheSets[set * E + i];
         printf("\tvalid=%d, tag=%ld, last_used=%ld\n", line.valid, line.tag, line.last_used);
