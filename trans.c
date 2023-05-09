@@ -49,8 +49,6 @@ void trans(int M, int N, int A[N][M], int B[M][N])
 char transpose_block_desc[] = "A test blocking transpose";
 void transpose_block(int M, int N, int A[N][M], int B[M][N])
 {
-    int rowBlock = 0;
-    int colBlock = 0;
     int blockSize = 8;
     int rowBlockCount = M / blockSize;
     int colBlockCount = N / blockSize;
