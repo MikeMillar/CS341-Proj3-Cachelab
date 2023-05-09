@@ -46,6 +46,20 @@ void trans(int M, int N, int A[N][M], int B[M][N])
 
 }
 
+char transpose_block_desc[] = "A test blocking transpose";
+void transpose_block(int M, int N, int A[N][M], int B[M][N])
+{
+    int rowBlock = 0;
+    int colBlock = 0;
+    int blockSize = 8;
+    for (int row = 0; row < blockSize; row++) {
+        for (int col = 0; col < blockSize; col++) {
+            B[colBlock*blockSize+col][rowBlock*blockSize+row] = 
+                A[rowBlock*blockSize+row][colBlock*blockSize+col];
+        }
+    }
+}
+
 /*
  * registerFunctions - This function registers your transpose
  *     functions with the driver.  At runtime, the driver will
@@ -60,6 +74,7 @@ void registerFunctions()
 
     /* Register any additional transpose functions */
     registerTransFunction(trans, trans_desc); 
+    registerTransFunction(transpose_block, transpose_block_desc);
 
 }
 
