@@ -55,9 +55,17 @@ void transpose_block(int M, int N, int A[N][M], int B[M][N])
     for (int rowBlock = 0; rowBlock < rowBlockCount; rowBlock++) {
         for (int colBlock = 0; colBlock < colBlockCount; colBlock++) {
             for (int row = 0; row < blockSize; row++) {
+                int rowIndex = rowBlock*blockSize+row;
+                if (rowIndex >= M) {
+                    break;
+                }
                 for (int col = 0; col < blockSize; col++) {
-                    B[colBlock*blockSize+col][rowBlock*blockSize+row] = 
-                        A[rowBlock*blockSize+row][colBlock*blockSize+col];
+                    int colIndex = colBlock*blockSize+col;
+                    if (colIndex >= N) {
+                        break;
+                    }
+                    B[colIndex][rowIndex] = 
+                        A[rowIndex][colIndex];
                 }
             }
         }   
