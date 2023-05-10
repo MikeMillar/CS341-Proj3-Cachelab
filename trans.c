@@ -53,6 +53,7 @@ void transpose_block(int M, int N, int A[N][M], int B[M][N])
     double blockSize = 8.0;
     int rowBlockCount = (int) ceil(M / blockSize);
     int colBlockCount = (int) ceil(N / blockSize);
+    int diagValue, diagIndex;
     for (int rowBlock = 0; rowBlock < rowBlockCount; rowBlock++) {
         for (int colBlock = 0; colBlock < colBlockCount; colBlock++) {
             for (int row = 0; row < blockSize; row++) {
@@ -65,8 +66,15 @@ void transpose_block(int M, int N, int A[N][M], int B[M][N])
                     if (colIndex >= N) {
                         break;
                     }
-                    B[colIndex][rowIndex] = 
-                        A[rowIndex][colIndex];
+                    if (rowIndex == colIndex) {
+                        diagIndex = rowIndex;
+                        diagValue = A[diagIndex][diagIndex];
+                    } else {
+                        B[colIndex][rowIndex] = A[rowIndex][colIndex];
+                    }
+                }
+                if (rowBlock == colBlock) {
+                    B[diagIndex][diagIndex] = diagValue;
                 }
             }
         }   
