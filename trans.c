@@ -23,6 +23,13 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
+    if (M == 32 && N == 32) {
+        transpose_block32(M, N, A, B);
+    } else if (M == 64 && N == 64) {
+        transpose_block(M, N, A, B);
+    } else {
+        transpose_block(M, N, A, B);
+    }
 }
 
 /* 
@@ -47,8 +54,8 @@ void trans(int M, int N, int A[N][M], int B[M][N])
 
 }
 
-char transpose_block_desc[] = "A test blocking transpose";
-void transpose_block(int M, int N, int A[N][M], int B[M][N])
+char transpose_block32_desc[] "A blocking transpose for 32x32 Matrix"
+void transpose_block32(int M, int N, int A[N][M], int B[M][N])
 {
     double blockSize = 8.0;
     int rowBlockCount = (int) ceil(M / blockSize);
@@ -79,7 +86,47 @@ void transpose_block(int M, int N, int A[N][M], int B[M][N])
             }
         }   
     }
-    
+}
+
+char transpose_block_desc[] = "A test blocking transpose";
+void transpose_block(int M, int N, int A[N][M], int B[M][N])
+{
+    double blockSize = 4.0;
+    int rowBlockCount = (int) ceil(M / blockSize);
+    int colBlockCount = (int) ceil(N / blockSize);
+    for (int rowBlock = 0; rowBlock < rowBlockCount; rowBlock++) {
+        for (int colBlock = 0; colBlock < colBlockCount; colBlock++) {
+            int v1,v2,v3,v4,v5,v6;
+            
+            // Get all elements below block diag
+            v1=A[rowBlock+1][colBlock];
+            v2=A[rowBlock+2][colBlock];
+            v3=A[rowBlock+2][colBlock+1];
+            v4=A[rowBlock+3][colBlock];
+            v5=A[rowBlock+3][colBlock+1];
+            v6=A[rowBlock+3][colBlock+2];
+            // Assign items in B[c][]
+            B[colBlock][rowBlock]=A[rowBlock][colBlock];
+            B[colBlock][rowBlock+1]=v1;
+            B[colBlock][rowBlock+2]=v2;
+            B[colBlock][rowBlock+3]=v4;
+            // Assign items in B[c+1][]
+            B[colBlock+1][rowBlock]=A[rowBlock][colBlock+1];
+            B[colBlock+1][rowBlock+1]=A[rowBlock+1][colBlock+1];
+            B[colBlock+1][rowBlock+2]=v3;
+            B[colBlock+1][rowBlock+3]=v5;
+            // Assign items in B[c+2][]
+            B[colBlock+2][rowBlock]=A[rowBlock][colBlock+2];
+            B[colBlock+2][rowBlock+1]=A[rowBlock+1][colBlock+2];
+            B[colBlock+2][rowBlock+2]=A[rowBlock+2][colBlock+2];
+            B[colBlock+2][rowBlock+3]=v6;
+            // Assign items in B[c+3][]
+            B[colBlock+3][rowBlock]=A[rowBlock][colBlock+3];
+            B[colBlock+3][rowBlock+1]=A[rowBlock+1][colBlock+3];
+            B[colBlock+3][rowBlock+2]=A[rowBlock+2][colBlock+3];
+            B[colBlock+3][rowBlock+3]=A[rowBlock+3][colBlock+3];
+        }   
+    }
 }
 
 /*
@@ -95,8 +142,8 @@ void registerFunctions()
     registerTransFunction(transpose_submit, transpose_submit_desc); 
 
     /* Register any additional transpose functions */
-    registerTransFunction(trans, trans_desc); 
-    registerTransFunction(transpose_block, transpose_block_desc);
+    // registerTransFunction(trans, trans_desc); 
+    // registerTransFunction(transpose_block, transpose_block_desc);
 
 }
 
