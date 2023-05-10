@@ -93,68 +93,73 @@ void transpose_block32(int M, int N, int A[N][M], int B[M][N])
 char transpose_block_desc[] = "A test blocking transpose";
 void transpose_block(int M, int N, int A[N][M], int B[M][N])
 {
-    double blockSize = 4.0;
-    // int rowBlockCount = (int) ceil(M / blockSize);
-    // int colBlockCount = (int) ceil(N / blockSize);
-    for (int rowBlock = 0; rowBlock < M; rowBlock+=blockSize) {
-        for (int colBlock = 0; colBlock < N; colBlock+=blockSize) {
-            int v1,v2,v3,v4,v5,v6;
-            
-            // // Get all elements below block diag
-            // v1=A[rowBlock+1][colBlock];
-            // v2=A[rowBlock+2][colBlock];
-            // v3=A[rowBlock+2][colBlock+1];
+    for (int rowBlock = 0; rowBlock < M; rowBlock+=4) {
+        for (int colBlock = 0; colBlock < N; colBlock+=4) {
+            int v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12;
+        
+            // // Get L of block
+            // v1=A[rowBlock][colBlock];
+            // v2=A[rowBlock+1][colBlock];
+            // v3=A[rowBlock+2][colBlock];
             // v4=A[rowBlock+3][colBlock];
             // v5=A[rowBlock+3][colBlock+1];
             // v6=A[rowBlock+3][colBlock+2];
-            // // Assign items in B[c][]
-            // B[colBlock][rowBlock]=A[rowBlock][colBlock];
-            // B[colBlock][rowBlock+1]=v1;
-            // B[colBlock][rowBlock+2]=v2;
-            // B[colBlock][rowBlock+3]=v4;
-            // // Assign items in B[c+1][]
-            // B[colBlock+1][rowBlock]=A[rowBlock][colBlock+1];
-            // B[colBlock+1][rowBlock+1]=A[rowBlock+1][colBlock+1];
-            // B[colBlock+1][rowBlock+2]=v3;
-            // B[colBlock+1][rowBlock+3]=v5;
-            // // Assign items in B[c+2][]
-            // B[colBlock+2][rowBlock]=A[rowBlock][colBlock+2];
-            // B[colBlock+2][rowBlock+1]=A[rowBlock+1][colBlock+2];
-            // B[colBlock+2][rowBlock+2]=A[rowBlock+2][colBlock+2];
-            // B[colBlock+2][rowBlock+3]=v6;
-            // // Assign items in B[c+3][]
+            // // Assign B[c+3][]
             // B[colBlock+3][rowBlock]=A[rowBlock][colBlock+3];
             // B[colBlock+3][rowBlock+1]=A[rowBlock+1][colBlock+3];
             // B[colBlock+3][rowBlock+2]=A[rowBlock+2][colBlock+3];
             // B[colBlock+3][rowBlock+3]=A[rowBlock+3][colBlock+3];
+            // // Assign B[c+2][]
+            // B[colBlock+2][rowBlock]=A[rowBlock][colBlock+2];
+            // B[colBlock+2][rowBlock+1]=A[rowBlock+1][colBlock+2];
+            // B[colBlock+2][rowBlock+2]=A[rowBlock+2][colBlock+2];
+            // B[colBlock+2][rowBlock+3]=v6;
+            // // Assign B[c+1][]
+            // B[colBlock+1][rowBlock]=A[rowBlock][colBlock+1];
+            // B[colBlock+1][rowBlock+1]=A[rowBlock+1][colBlock+1];
+            // B[colBlock+1][rowBlock+2]=A[rowBlock+2][colBlock+1];
+            // B[colBlock+1][rowBlock+3]=v5;
+            // // Assign B[c][]
+            // B[colBlock][rowBlock]=v1;
+            // B[colBlock][rowBlock+1]=v2;
+            // B[colBlock][rowBlock+2]=v3;
+            // B[colBlock][rowBlock+3]=v4;
 
-            // Get L of block
+            // Get first 3 rows of block
             v1=A[rowBlock][colBlock];
-            v2=A[rowBlock+1][colBlock];
-            v3=A[rowBlock+2][colBlock];
-            v4=A[rowBlock+3][colBlock];
-            v5=A[rowBlock+3][colBlock+1];
-            v6=A[rowBlock+3][colBlock+2];
-            // Assign B[c+3][]
-            B[colBlock+3][rowBlock]=A[rowBlock][colBlock+3];
-            B[colBlock+3][rowBlock+1]=A[rowBlock+1][colBlock+3];
-            B[colBlock+3][rowBlock+2]=A[rowBlock+2][colBlock+3];
+            v2=A[rowBlock][colBlock+1];
+            v3=A[rowBlock][colBlock+2];
+            v4=A[rowBlock][colBlock+3];
+
+            v5=A[rowBlock+1][colBlock];
+            v6=A[rowBlock+1][colBlock+1];
+            v7=A[rowBlock+1][colBlock+2];
+            v8=A[rowBlock+1][colBlock+3];
+
+            v9=A[rowBlock+2][colBlock];
+            v10=A[rowBlock+2][colBlock+1];
+            v11=A[rowBlock+2][colBlock+2];
+            v12=A[rowBlock+2][colBlock+3];
+            // Assign B[][r+3]
+            B[colBlock][rowBlock+3]=A[rowBlock+3][colBlock];
+            B[colBlock+1][rowBlock+3]=A[rowBlock+3][colBlock+1];
+            B[colBlock+2][rowBlock+3]=A[rowBlock+3][colBlock+2];
             B[colBlock+3][rowBlock+3]=A[rowBlock+3][colBlock+3];
-            // Assign B[c+2][]
-            B[colBlock+2][rowBlock]=A[rowBlock][colBlock+2];
-            B[colBlock+2][rowBlock+1]=A[rowBlock+1][colBlock+2];
-            B[colBlock+2][rowBlock+2]=A[rowBlock+2][colBlock+2];
-            B[colBlock+2][rowBlock+3]=v6;
-            // Assign B[c+1][]
-            B[colBlock+1][rowBlock]=A[rowBlock][colBlock+1];
-            B[colBlock+1][rowBlock+1]=A[rowBlock+1][colBlock+1];
-            B[colBlock+1][rowBlock+2]=A[rowBlock+2][colBlock+1];
-            B[colBlock+1][rowBlock+3]=v5;
-            // Assign B[c][]
+            // Assign B[][r+2]
+            B[colBlock][rowBlock+2]=v9;
+            B[colBlock+1][rowBlock+2]=v10;
+            B[colBlock+2][rowBlock+2]=v11;
+            B[colBlock+3][rowBlock+2]=v12;
+            // Assign B[][r+1]
+            B[colBlock][rowBlock+1]=v5;
+            B[colBlock+1][rowBlock+1]=v6;
+            B[colBlock+2][rowBlock+1]=v7;
+            B[colBlock+3][rowBlock+1]=v8;
+            // Assign B[][r]
             B[colBlock][rowBlock]=v1;
-            B[colBlock][rowBlock+1]=v2;
-            B[colBlock][rowBlock+2]=v3;
-            B[colBlock][rowBlock+3]=v4;
+            B[colBlock+1][rowBlock]=v2;
+            B[colBlock+2][rowBlock]=v3;
+            B[colBlock+3][rowBlock]=v4;
         }   
     }
 }
