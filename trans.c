@@ -54,7 +54,7 @@ void trans(int M, int N, int A[N][M], int B[M][N])
 
 }
 
-char transpose_block32_desc[] "A blocking transpose for 32x32 Matrix"
+char transpose_block32_desc[] "A blocking transpose for 32x32 Matrix";
 void transpose_block32(int M, int N, int A[N][M], int B[M][N])
 {
     double blockSize = 8.0;
