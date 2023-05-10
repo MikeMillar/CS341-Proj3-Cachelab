@@ -1,3 +1,11 @@
+/*
+ * UNM CS341 Cachelab Project 3
+ * Due May 8, 2023
+ * Michael Millar
+ * mmillar@unm.edu
+ */
+
+// Libraries
 #include <getopt.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,18 +27,19 @@ struct Line {
 typedef struct Line Line_t;
 
 /* Function prototypes */
-char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p);
+char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E,
+         int* hit_count_p, int* miss_count_p, int* eviction_count_p);
 void evict(Line_t cacheSets[], long tag, long set, int E, int line);
 // void decrementUnused(Line_t cacheSets[], long set, int E, int usedIndex);
 void initializeCache(Line_t sets[], int set_count, int E);
-void substring(char newStr[], char str[], int start, int end);
 long extract(int num, int length, int offset);
 void printHelp();
 void printError(char* msg);
 void printSet(Line_t cacheSets[], int E, int set);
-
+// traceLine used to keep track of oldest lines in a set
 int traceLine = 0;
 
+// Main application run
 int main(int argc, char *argv[]) {
     // Parse command line arguments
     // -h: help
@@ -149,18 +158,22 @@ int main(int argc, char *argv[]) {
             {
             case 'L':
                 // Load data
-                result = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
+                result = loadOrSaveData(cacheSets, tag, set, E, 
+                        &hit_count, &miss_count, &eviction_count);
                 strcpy(res_out, result);
                 break;
             case 'S':
                 // Store data
-                result = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
+                result = loadOrSaveData(cacheSets, tag, set, E, 
+                        &hit_count, &miss_count, &eviction_count);
                 strcpy(res_out, result);
                 break;
             case 'M':
                 // Modify data  
-                result = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
-                tmp = loadOrSaveData(cacheSets, tag, set, E, &hit_count, &miss_count, &eviction_count);
+                result = loadOrSaveData(cacheSets, tag, set, E, &hit_count,
+                         &miss_count, &eviction_count);
+                tmp = loadOrSaveData(cacheSets, tag, set, E, &hit_count,
+                         &miss_count, &eviction_count);
                 strcpy(res_out, result);
                 strcat(res_out, " ");
                 strcat(res_out, tmp);
@@ -184,7 +197,8 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E, int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
+char* loadOrSaveData(Line_t cacheSets[], long tag, long set, int E,
+         int* hit_count_p, int* miss_count_p, int* eviction_count_p) {
     int leastRecentIndex = 0;
     long oldestTime = LONG_MAX;
     // iterate through set lines
@@ -235,12 +249,6 @@ void initializeCache(Line_t sets[], int set_count, int E) {
             sets[set * E + lineOffset].valid = 0;
             sets[set * E + lineOffset].last_used = -1;
         }
-    }
-}
-
-void substring(char newStr[], char str[], int start, int end) {
-    for (; start < end; start++) {
-        newStr[start] = str[start];
     }
 }
 
