@@ -94,10 +94,10 @@ char transpose_block_desc[] = "A test blocking transpose";
 void transpose_block(int M, int N, int A[N][M], int B[M][N])
 {
     double blockSize = 4.0;
-    int rowBlockCount = (int) ceil(M / blockSize);
-    int colBlockCount = (int) ceil(N / blockSize);
-    for (int rowBlock = 0; rowBlock < rowBlockCount; rowBlock++) {
-        for (int colBlock = 0; colBlock < colBlockCount; colBlock++) {
+    // int rowBlockCount = (int) ceil(M / blockSize);
+    // int colBlockCount = (int) ceil(N / blockSize);
+    for (int rowBlock = 0; rowBlock < M; rowBlock+=blockSize) {
+        for (int colBlock = 0; colBlock < N; colBlock+=blockSize) {
             int v1,v2,v3,v4,v5,v6;
             
             // Get all elements below block diag
